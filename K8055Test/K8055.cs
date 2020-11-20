@@ -64,5 +64,13 @@ namespace K8055Test
 
         [DllImport("K8055D.dll")]
         public static extern void SetCounterDebounceTime(int CounterNr, int DebounceTime);
+
+        //ADDED
+
+        [DllImport("K8055D.dll")]
+        public static extern void SetDigitalInputChannel(int Channel, bool Status);
+
+        [DllImport("K8055D.dll")]
+        public static extern void SetAnalogInputChannel(int Channel, int Data);
     }
 }

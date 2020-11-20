@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:K8055Test"
         mc:Ignorable="d"
-        Title="K8055Test" Height="360" Width="650" Closing="MainWindowClosing" ResizeMode="NoResize" WindowStyle="ToolWindow">
+        Title="K8055 - IOT - DOMOTICA" Height="510" Width="660" Closing="MainWindowClosing" ResizeMode="NoResize" WindowStyle="ToolWindow">
     <Window.Resources>
         <Style x:Key="ProcedureButtons" TargetType="{x:Type Button}">
             <Setter Property="Height" Value="25"/>
@@ -65,6 +65,23 @@
         <Button x:Name="K8055SetAllAnalogButton"    Style="{StaticResource ProcedureButtons}" Content="Set All Analog"    Margin="10,227, 0, 0"/>
         <Button x:Name="K8055ClearAllAnalogButton"  Style="{StaticResource ProcedureButtons}" Content="Clear All Analog"  Margin="10,257, 0, 0"/>
         <Button x:Name="K8055OutputTestButton"      Style="{StaticResource ProcedureButtons}" Content="Output Test"       Margin="10,287, 0, 0"/>
+        
+        
+        
+        
+        <Button x:Name="dinner"   Style="{StaticResource ProcedureButtons}" Content="Luzes jantar"    Margin="10,334,0,0"/>
+        <Button x:Name="sofa"     Style="{StaticResource ProcedureButtons}" Content="Sofá"            Margin="114,334,0,0"/>
+        <Button x:Name="temp"     Style="{StaticResource ProcedureButtons}" Content="Temperatura"     Margin="219,334,0,0"/>
+        <Button x:Name="blinds"   Style="{StaticResource ProcedureButtons}" Content="Persianas"       Margin="324,334,0,0"/>
+        <Button x:Name="hose"     Style="{StaticResource ProcedureButtons}" Content="Sistema Rega"    Margin="429,334,0,0"/>
+        <Button x:Name="timeDay"  Style="{StaticResource ProcedureButtons}" Content="Hora do Dia"     Margin="534,334,0,0"/>
+        <Button x:Name="onOff"    Style="{StaticResource ProcedureButtons}" Content="On/Off"          Margin="272,364,0,0"/>
+
+        <Button x:Name="dayNight" Style="{StaticResource ProcedureButtons}" Content="Day/night Cycle" Margin="10,437,0,0"/>
+        
+        
+        
+        
 
         <GroupBox Height="297" Width="70" Margin="134,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <GroupBox.Header>
@@ -83,6 +100,7 @@
                 </Slider>
             </Canvas>
         </GroupBox>
+        
         <GroupBox Height="297" Width="95" Margin="220,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <GroupBox.Header>
                 <Label>ADC</Label>
@@ -113,6 +131,7 @@
                 <CheckBox x:Name="K8055DigitalInputCheckbox5" Canvas.Left="145" Canvas.Top="0" Content="5" IsEnabled="False"/>
             </Canvas>
         </GroupBox>
+        
         <GroupBox Height="55" Width="290" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="328,75,0,0">
             <GroupBox.Header>
                 <Label>Outputs</Label>
@@ -140,6 +159,7 @@
                 <Button  x:Name="K8055SetDebounce1Button"  Style="{StaticResource DebounceStyle}" Canvas.Left="4" Canvas.Top="108" Content="Set Debounce Time" Click="K8055SetDebounceButtonClick" />
             </Canvas>
         </GroupBox>
+        
         <GroupBox Height="177" Width="135" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="483,135,0,0">
             <GroupBox.Header>
                 <Label>Counter 2</Label>
@@ -151,5 +171,6 @@
                 <Button x:Name="K8055SetDebounce2Button"   Style="{StaticResource DebounceStyle}"   Canvas.Left="4" Canvas.Top="108" Content="Set Debounce Time" Click="K8055SetDebounceButtonClick"/>
             </Canvas>
         </GroupBox>
+        
     </Grid>
 </Window>
