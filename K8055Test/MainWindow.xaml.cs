@@ -13,7 +13,7 @@ namespace K8055Test
         private readonly DispatcherTimer _timer = new DispatcherTimer();
         private bool _digitalOutputTest;
         private bool _isConnected;
-
+        private int? HorasDia, HorasNoite, MinDia, MinNoite;
         private bool _lightSwitch;
         private bool _sofaSwitch;
         private bool _hoseSwitch;
@@ -172,6 +172,18 @@ namespace K8055Test
                         _onOff = !_onOff;
                         break;
                     }
+                case "AtivarManha":
+                    {
+                       
+                        break;
+                    }
+                case "AtivarNoite":
+                    {
+                        var TempoDia = 
+                        break;
+                    }
+
+
 
                 //Utilities for demonstration
                 case "dayNight":
