@@ -14,19 +14,19 @@ namespace K8055Test
         private bool _digitalOutputTest;
         private bool _isConnected;
 
-
-        private int? HorasDia, HorasNoite, MinDia, MinNoite;
-
-
         private bool _lightSwitch;
         private bool _sofaSwitch;
         private bool _hoseSwitch;
         private bool _onOff;
-
         private bool _doDayLightCycle;
         private bool _varyTemp;
         private bool _isolate;
+        private bool _blindSwitch;
+        private int _openBlinds;//O quao abertas estão as persianas
+        private bool _hosingTime;//è tempo de rega?
 
+        private int HorasDia = 85;//8 da manhã
+        private int HorasNoite = 212;//20 h da noite
 
         public MainWindow()
         {
@@ -145,7 +145,7 @@ namespace K8055Test
                         //Temperatura (analog in 2)
                         // -> Ar condicionado (digital out 5)
                         // -> Persianas (analog out 1)
-                        Thread thread = new Thread(ResetTemperature);
+                        Thread thread = new Thread(RandTemperature);
                         thread.Start();
 
                         break;
@@ -166,35 +166,15 @@ namespace K8055Test
                         thread.Start();
                         break;
                     }
-                case "timeDay":
-                    {
-                        //Hora do Dia (digital in 4)
-                        // -> Persianas (analog out 1)
-                        // -> Aspressor (digital out 6)
-                        // -> Maquina café (digital out 7)
-                        // -> Água Banho TEMPERATURA (analog out 2)
-                        // -> Radio (digital out 8)
-
-
-                        break;
-                    }
                 case "onOff":
                     {
-                        _onOff = !_onOff;
-                        if (_onOff)
-                        {
-                            Thread threadTime = new Thread(TimeControl);
-                            Thread threadTemp = new Thread(TempControl);
+                        // ON/OFF (digital in 5)
 
-                            threadTime.Start();
-                            threadTemp.Start();
-                        }
+                        Thread threadOn = new Thread(OnOffCreation);
+                        threadOn.Start();
                         break;
                     }
-
-
-
-                //Utilities for demonstration
+                //Utilities for demonstration below
                 case "dayNight":
                     {
                         _doDayLightCycle = !_doDayLightCycle;
@@ -217,6 +197,7 @@ namespace K8055Test
                     }
             }
         }
+
 
         /// <summary>
         /// Updates UI elements with the values of the K8055 periodically.
@@ -306,6 +287,10 @@ namespace K8055Test
             _sofaSwitch = false;
             _hoseSwitch = false;
             _onOff = false;
+            _varyTemp = false;
+            _isolate = false;
+            _blindSwitch = false;
+            _hosingTime = false;
 
             Application.Current.Shutdown();
         }
@@ -344,6 +329,10 @@ namespace K8055Test
         //NEW CODE IS BELOW HERE
         //--------------------------------------------------------------------------------------------------------------------------------
 
+        /// <summary>
+        /// Asists with the passing of time.
+        /// To simulate real life conditions.
+        /// </summary>
         private void AnalogOutputCycle()
         {
             while (_doDayLightCycle)
@@ -355,32 +344,45 @@ namespace K8055Test
                         K8055.SetAnalogInputChannel(1, i);
                     }));
                     Thread.Sleep(100);
+
+                    if (!_doDayLightCycle)
+                    {
+                        break;
+                    }
                 }
 
-                Dispatcher.BeginInvoke(new Action(delegate
+                if (_doDayLightCycle)
                 {
-                    K8055.SetAnalogInputChannel(1, 0);
-                }));
+                    Dispatcher.BeginInvoke(new Action(delegate
+                    {
+                        K8055.SetAnalogInputChannel(1, 0);
+                    }));
+                }
             }
         }
 
+        /// <summary>
+        /// Asists with the random variation of temperature
+        /// To simulate real life conditions.
+        /// </summary>
         private void VaryTemp()
         {
             var rand = new Random();
-            K8055.SetAnalogInputChannel(2, 130);
 
             while (_varyTemp)
             {
                 Dispatcher.BeginInvoke(new Action(delegate
                 {
-                    K8055.SetAnalogInputChannel(2,
-                                                    K8055.ReadAnalogChannel(2)
+                    K8055.SetAnalogInputChannel(2, K8055.ReadAnalogChannel(2)
                                                         + rand.Next(-3, 4));
                 }));
                 Thread.Sleep(100);
             }
         }
 
+        /// <summary>
+        /// Designates the behaviour of the light system.
+        /// </summary>
         private void LightToggle()
         {
             //Luz jantar (digital in 1)
@@ -388,36 +390,35 @@ namespace K8055Test
             // -> Liga luzes Cozinha (digital out 2)
             _lightSwitch = !_lightSwitch;
 
-            Dispatcher.BeginInvoke(new Action(delegate
+            while (_lightSwitch)
             {
-                ((CheckBox)K8055DigitalOutputCanvas.Children[0]).IsChecked = false;
-                ((CheckBox)K8055DigitalOutputCanvas.Children[1]).IsChecked = false;
-
-                if (_lightSwitch)
+                Dispatcher.BeginInvoke(new Action(delegate
                 {
-                    //K8055.OutputAnalogChannel(1, 20);
-                    K8055.SetDigitalInputChannel(1, false);
-
+                    K8055.SetDigitalInputChannel(1, _lightSwitch);
                     if (_onOff)
                     {
-                        ((CheckBox)K8055DigitalOutputCanvas.Children[0]).IsChecked = false;
-                        ((CheckBox)K8055DigitalOutputCanvas.Children[1]).IsChecked = false;
+                        ((CheckBox)K8055DigitalOutputCanvas.Children[0]).IsChecked = _lightSwitch;
+                        ((CheckBox)K8055DigitalOutputCanvas.Children[1]).IsChecked = _lightSwitch;
                     }
-                }
-                else
-                {
-                    //K8055.OutputAnalogChannel(1, 0);
-                    K8055.SetDigitalInputChannel(1, true);
+                }));
+                Thread.Sleep(100);
+            }
 
-                    if (_onOff)
-                    {
-                        ((CheckBox)K8055DigitalOutputCanvas.Children[0]).IsChecked = true;
-                        ((CheckBox)K8055DigitalOutputCanvas.Children[1]).IsChecked = true;
-                    }
-                }
-            }));
+            try
+            {
+                ((CheckBox)K8055DigitalOutputCanvas.Children[0]).IsChecked = _lightSwitch;
+                ((CheckBox)K8055DigitalOutputCanvas.Children[1]).IsChecked = _lightSwitch;
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
+            
         }
 
+        /// <summary>
+        /// Designates the behaviour of the Sofa system.
+        /// </summary>
         private void SofaRemote()
         {
             //Sofá (digital in 2)
@@ -425,101 +426,102 @@ namespace K8055Test
             // -> Liga luzes Cozinha (digital out 4)
             _sofaSwitch = !_sofaSwitch;
 
-            Dispatcher.BeginInvoke(new Action(delegate
+            while (_sofaSwitch)
             {
-                if (_sofaSwitch)
+                Dispatcher.BeginInvoke(new Action(delegate
                 {
-                    K8055.SetDigitalInputChannel(2, false);
+                    K8055.SetDigitalInputChannel(2, _sofaSwitch);
 
                     if (_onOff)
                     {
-                        ((CheckBox)K8055DigitalOutputCanvas.Children[2]).IsChecked = false;
-                        ((CheckBox)K8055DigitalOutputCanvas.Children[3]).IsChecked = false;
+                        ((CheckBox)K8055DigitalOutputCanvas.Children[2]).IsChecked = _sofaSwitch;
+                        ((CheckBox)K8055DigitalOutputCanvas.Children[3]).IsChecked = _sofaSwitch;
                     }
-                }
-                else
-                {
-                    K8055.SetDigitalInputChannel(2, true);
+                }));
+                Thread.Sleep(100);
+            }
 
-                    if (_onOff)
-                    {
-                        ((CheckBox)K8055DigitalOutputCanvas.Children[2]).IsChecked = true;
-                        ((CheckBox)K8055DigitalOutputCanvas.Children[3]).IsChecked = true;
-                    }
-                }
-            }));
+            try
+            {
+                ((CheckBox)K8055DigitalOutputCanvas.Children[2]).IsChecked = _sofaSwitch;
+                ((CheckBox)K8055DigitalOutputCanvas.Children[3]).IsChecked = _sofaSwitch;
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
+            
         }
 
+        /// <summary>
+        /// Designates the behaviour of the Hose system.
+        /// </summary>
         private void HomeBlinds()
         {
             //Blinds (digital in 3)
             // -> Persianas (analog out 1)
-            Dispatcher.BeginInvoke(new Action(delegate
+            _blindSwitch = !_blindSwitch;
+
+            K8055.SetDigitalInputChannel(3, _blindSwitch);
+
+            while (_blindSwitch)
             {
-                BlindsActivation();
-            }));
+                Dispatcher.BeginInvoke(new Action(delegate
+                {
+                    int data = _isolate
+                        ? Math.Max(_openBlinds - 20, 0)
+                        : _openBlinds;
+
+                    K8055.OutputAnalogChannel(1, data);
+                }));
+                Thread.Sleep(100);
+            }
+            K8055.OutputAnalogChannel(1, 0);
         }
 
-        private void BlindsActivation()
-        {
-            // Persianas(analog out 1)
-            Dispatcher.BeginInvoke(new Action(delegate
-            {
-                if (_isolate)
-                {
-                    K8055.OutputAnalogChannel(1, 50);
-                }
-                else
-                {
-                    K8055.OutputAnalogChannel(1, 150);
-                }
-
-            }));
-        }
-
+        /// <summary>
+        /// Designates the behaviour of the Hose system.
+        /// </summary>
         private void HoseRegulation()
         {
             //Rega (digital in 4)
             // -> Aspressor (digital out 6)
-            Dispatcher.BeginInvoke(new Action(delegate
+            _hoseSwitch = !_hoseSwitch;
+
+            K8055.SetDigitalInputChannel(4, _hoseSwitch);
+
+            while (_hoseSwitch)
             {
-                _hoseSwitch = !_hoseSwitch;
-
-                if (_hoseSwitch)
+                Dispatcher.BeginInvoke(new Action(delegate
                 {
-                    K8055.SetDigitalInputChannel(4, false);
-
-                    if (_onOff)
-                        HoseActivation(false);
-                }
-                else
-                {
-                    K8055.SetDigitalInputChannel(4, true);
-
-                    if (_onOff)
-                        HoseActivation(true);
-                }
-            }));
+                    ((CheckBox)K8055DigitalOutputCanvas.Children[5]).IsChecked = _onOff && _hosingTime
+                        ? true
+                        : false;
+                }));
+                Thread.Sleep(100);
+            }
+            try
+            {
+                ((CheckBox)K8055DigitalOutputCanvas.Children[5]).IsChecked = false;
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
         }
 
-        private void HoseActivation(bool set)
-        {
-            Dispatcher.BeginInvoke(new Action(delegate
-            {
-                ((CheckBox)K8055DigitalOutputCanvas.Children[5]).IsChecked = set;
-            }));
-        }
-
-
-
+        /// <summary>
+        /// Designates the behaviour of the time.
+        /// </summary>
         private void TimeControl()
         {
-            //Hora do Dia (digital in 4)
+            //Hora do Dia (analog in 1)
 
             // -> Persianas (analog out 1)
-            // -> Água Banho TEMPERATURA (analog out 2)
 
             // -> Aspressor (digital out 6)
+
+            // -> Água Banho TEMPERATURA (analog out 2)
             // -> Maquina café (digital out 7)
             // -> Radio (digital out 8)
 
@@ -527,12 +529,56 @@ namespace K8055Test
             {
                 Dispatcher.BeginInvoke(new Action(delegate
                 {
+                    var time = K8055.ReadAnalogChannel(1);
+                    // NUM DEFENIDO POR FUNÇÂO
+                    _openBlinds = HorasDia < time && time < HorasNoite
+                        ? time
+                        : 0;
 
+                    // È TEMPO OU NÂO
+                    _hosingTime = Math.Max(HorasNoite - 10, 0) < time && time < Math.Min(HorasNoite + 10, 255);
+
+                    SetWaterTemp();
+                    CheckWakeUp();
                 }));
                 Thread.Sleep(100);
             }
         }
 
+        private void SetWaterTemp()
+        {
+            var time = K8055.ReadAnalogChannel(1);
+            var temp = K8055.ReadAnalogChannel(2);
+
+            int watertemp = Math.Max(HorasDia - 10, 0) < time && time < Math.Min(HorasDia + 10, 255)
+                ? 255 - temp
+                : 0;
+            K8055.OutputAnalogChannel(2, watertemp);
+        }
+
+        /// <summary>
+        /// Turns on boiler.
+        /// Turns on coffemachine.
+        /// Turns Radio on.
+        /// </summary>
+        private void CheckWakeUp()
+        {
+            var time = K8055.ReadAnalogChannel(1);
+            if (Math.Max(HorasDia - 10, 0) < time && time < Math.Min(HorasDia + 10, 255))
+            {
+                ((CheckBox)K8055DigitalOutputCanvas.Children[6]).IsChecked = true;
+                ((CheckBox)K8055DigitalOutputCanvas.Children[7]).IsChecked = true;
+            }
+            else
+            {
+                ((CheckBox)K8055DigitalOutputCanvas.Children[6]).IsChecked = false;
+                ((CheckBox)K8055DigitalOutputCanvas.Children[7]).IsChecked = false;
+            }
+        }
+
+        /// <summary>
+        /// Designates the behaviour of the temperature input.
+        /// </summary>
         private void TempControl()
         {
             //Temperatura (analog in 2)
@@ -559,8 +605,10 @@ namespace K8055Test
             }
         }
 
-
-        private void ResetTemperature()
+        /// <summary>
+        /// Randomizes current temrature.
+        /// </summary>
+        private void RandTemperature()
         {
             var rand = new Random();
 
@@ -570,50 +618,103 @@ namespace K8055Test
             }));
         }
 
+        /// <summary>
+        /// toggles the System
+        /// </summary>
+        private void OnOffCreation()
+        {
+            // ON/OFF (digital in 5)
+
+            Dispatcher.BeginInvoke(new Action(delegate
+            {
+                _onOff = !_onOff;
+
+                if (_onOff)
+                {
+                    Thread threadTime = new Thread(TimeControl);
+                    Thread threadTemp = new Thread(TempControl);
+
+                    threadTime.Start();
+                    threadTemp.Start();
+                }
+                else
+                {
+                    AllOutToNull();
+                }
+
+                K8055.SetDigitalInputChannel(5, _onOff);
+            }));
+        }
+
+        /// <summary>
+        /// Sets all outputs to 0 or false, for analog and digital respectively.
+        /// </summary>
+        private void AllOutToNull()
+        {
+            K8055.OutputAnalogChannel(1, 0);
+            K8055.OutputAnalogChannel(2, 0);
+
+            ((CheckBox)K8055DigitalOutputCanvas.Children[0]).IsChecked = false;
+            ((CheckBox)K8055DigitalOutputCanvas.Children[1]).IsChecked = false;
+            ((CheckBox)K8055DigitalOutputCanvas.Children[2]).IsChecked = false;
+            ((CheckBox)K8055DigitalOutputCanvas.Children[3]).IsChecked = false;
+            ((CheckBox)K8055DigitalOutputCanvas.Children[4]).IsChecked = false;
+        }
+
 
         //SET TIMES OF DAY
         //------------------------------------------------------------------------------------------
         private void AtivarManha_Click(object sender, RoutedEventArgs e)
         {
-            HorasDia = int.Parse(((TextBox)K8055ManhaHora).Text);
-            MinDia = int.Parse(((TextBox)K8055ManhaMinuto).Text);
-
-            if (HorasDia==24 && MinDia > 30)
+            try
             {
-                HorasDia = 1;
+                HorasDia = int.Parse(((TextBox)K8055ManhaHora).Text);
+                var MinDia = int.Parse(((TextBox)K8055ManhaMinuto).Text);
+
+                if (HorasDia == 24 && MinDia > 30)
+                {
+                    HorasDia = 1;
+                }
+                if (HorasDia < 24 && MinDia > 30)
+                {
+                    HorasDia += 1;
+                }
+
+                if (HorasDia > 24)
+                    HorasDia = 9;
+
+                HorasDia = (HorasDia * 255) / 24;
             }
-            if (HorasDia < 24 && MinDia > 30)
+            catch (Exception)
             {
-                HorasDia += 1;
+                HorasDia = 85;
             }
-
-            if (HorasDia > 24)
-                HorasDia = 9;
-
-
-            HorasDia = (HorasDia * 255) / 24;
         }
 
         private void AtivarNoite_Click(object sender, RoutedEventArgs e)
         {
-            HorasNoite = int.Parse(((TextBox)K8055NoiteHora).Text);
-            MinNoite = int.Parse(((TextBox)K8055NoiteMinuto).Text);
-
-            if (HorasNoite == 24 && MinNoite> 30)
+            try
             {
-                HorasNoite = 1;
-            }
-            if (HorasNoite < 24 && MinNoite > 30)
-            {
-                HorasNoite += 1;
-            }
-            if (HorasNoite > 24)
-                HorasNoite = 20;
+                HorasNoite = int.Parse(((TextBox)K8055NoiteHora).Text);
+                var MinNoite = int.Parse(((TextBox)K8055NoiteMinuto).Text);
 
-            HorasNoite = (HorasNoite * 255) / 24;
-           
-           
+                if (HorasNoite == 24 && MinNoite > 30)
+                {
+                    HorasNoite = 1;
+                }
+                if (HorasNoite < 24 && MinNoite > 30)
+                {
+                    HorasNoite += 1;
+                }
+                if (HorasNoite > 24)
+                    HorasNoite = 20;
+
+                HorasNoite = (HorasNoite * 255) / 24;
+            }
+            catch (Exception)
+            {
+                HorasNoite = 212;
+            }
         }
-
     }
 }

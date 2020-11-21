@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:K8055Test"
         mc:Ignorable="d"
-        Title="K8055 - IOT - DOMOTICA" Height="510" Width="660" Closing="MainWindowClosing" ResizeMode="NoResize" WindowStyle="ToolWindow">
+        Title="K8055 - IOT - DOMOTICA" Height="520" Width="660" Closing="MainWindowClosing" ResizeMode="NoResize" WindowStyle="ToolWindow">
     <Window.Resources>
         <Style x:Key="ProcedureButtons" TargetType="{x:Type Button}">
             <Setter Property="Height" Value="25"/>
@@ -69,16 +69,15 @@
 
 
 
-        <Button x:Name="dinner"   Style="{StaticResource ProcedureButtons}" Content="Luzes jantar"     Margin="10,334,0,0"/>
-        <Button x:Name="sofa"     Style="{StaticResource ProcedureButtons}" Content="Sofá"             Margin="114,334,0,0"/>
-        <Button x:Name="temp"     Style="{StaticResource ProcedureButtons}" Content="Temperatura"      Margin="219,334,0,0"/>
-        <Button x:Name="blinds"   Style="{StaticResource ProcedureButtons}" Content="Persianas"        Margin="10,379,0,0"/>
-        <Button x:Name="hose"     Style="{StaticResource ProcedureButtons}" Content="Sistema Rega"     Margin="114,379,0,0"/>
-        <Button x:Name="timeDay"  Style="{StaticResource ProcedureButtons}" Content="Hora do Dia"      Margin="220,379,0,0"/>
-        <Button x:Name="onOff"    Style="{StaticResource ProcedureButtons}" Content="On/Off"           Margin="10,447,0,0"/>
+        <Button x:Name="dinner"   Style="{StaticResource ProcedureButtons}" Content="(1) Luzes jantar"     Margin="10,334,0,0"/>
+        <Button x:Name="sofa"     Style="{StaticResource ProcedureButtons}" Content="(2) Sofá"             Margin="114,334,0,0" Width="101"/>
+        <Button x:Name="blinds"   Style="{StaticResource ProcedureButtons}" Content="(3) Persianas"        Margin="220,334,0,0"/>
+        <Button x:Name="hose"     Style="{StaticResource ProcedureButtons}" Content="(4) Sistema Rega"     Margin="10,364,0,0" Width="154"/>
+        <Button x:Name="onOff"    Style="{StaticResource ProcedureButtons}" Content="(5) On/Off"           Margin="169,364,0,0" Width="151"/>
+        <Button x:Name="temp"     Style="{StaticResource ProcedureButtons}" Content="Rand Temp"            Margin="114,445,0,0"/>
 
-        <Button x:Name="dayNight" Style="{StaticResource ProcedureButtons}" Content="Day/night Cycle"  Margin="363,447,0,0"/>
-        <Button x:Name="varyTemp" Style="{StaticResource ProcedureButtons}" Content="Vary Temperature" Margin="518,447,0,0"/>
+        <Button x:Name="dayNight" Style="{StaticResource ProcedureButtons}" Content="(1) Day/night Cycle"  Margin="10,394,0,0" Width="154"/>
+        <Button x:Name="varyTemp" Style="{StaticResource ProcedureButtons}" Content="(2) Vary Temperature" Margin="169,394,0,0" Width="151"/>
 
 
 
@@ -173,26 +172,8 @@
             </Canvas>
         </GroupBox>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <GroupBox Height="113" Width="143" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="345,325,0,0" RenderTransformOrigin="0.5,0.5">
+        
+        <GroupBox Height="120" Width="135" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="329,328,0,0" RenderTransformOrigin="0.5,0.5">
             <GroupBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -214,7 +195,7 @@
 
             </Canvas>
         </GroupBox>
-        <GroupBox Height="111" Width="140" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="503,322,0,0" RenderTransformOrigin="0.5,0.5">
+        <GroupBox Height="120" Width="135" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="482,328,0,0" RenderTransformOrigin="0.5,0.5">
             <GroupBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -228,27 +209,12 @@
             </GroupBox.Header>
             <Canvas x:Name="K8055NoiteTempo" Margin="0,0,146,7">
                 <TextBox x:Name="K8055NoiteHora" Style="{StaticResource DebounceStyle}" IsEnabled="True"  Width="50" Height="13" Canvas.Top="5" />
-                <Button x:Name="AtivarNoite" Style="{StaticResource DebounceStyle}" Content="Ativar" Click="AtivarNoite_Click" Height="19" Width="65" Canvas.Top="51"/>
+                <Button x:Name="AtivarNoite" Style="{StaticResource DebounceStyle}" Content="Ativar" Click="AtivarNoite_Click" Height="21" Width="79" Canvas.Top="60"/>
                 <TextBox x:Name="K8055NoiteMinuto" Style="{StaticResource DebounceStyle}" IsEnabled="True"  Width="50" Height="13" Canvas.Top="33" />
 
             </Canvas>
         </GroupBox>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
     </Grid>
 </Window>
