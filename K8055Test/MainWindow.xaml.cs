@@ -13,12 +13,20 @@ namespace K8055Test
         private readonly DispatcherTimer _timer = new DispatcherTimer();
         private bool _digitalOutputTest;
         private bool _isConnected;
+
+
         private int? HorasDia, HorasNoite, MinDia, MinNoite;
+
+
         private bool _lightSwitch;
         private bool _sofaSwitch;
         private bool _hoseSwitch;
         private bool _onOff;
+
         private bool _doDayLightCycle;
+        private bool _varyTemp;
+        private bool _isolate;
+
 
         public MainWindow()
         {
@@ -137,6 +145,8 @@ namespace K8055Test
                         //Temperatura (analog in 2)
                         // -> Ar condicionado (digital out 5)
                         // -> Persianas (analog out 1)
+                        Thread thread = new Thread(ResetTemperature);
+                        thread.Start();
 
                         break;
                     }
@@ -165,21 +175,20 @@ namespace K8055Test
                         // -> Água Banho TEMPERATURA (analog out 2)
                         // -> Radio (digital out 8)
 
+
                         break;
                     }
                 case "onOff":
                     {
                         _onOff = !_onOff;
-                        break;
-                    }
-                case "AtivarManha":
-                    {
-                       
-                        break;
-                    }
-                case "AtivarNoite":
-                    {
-                        var TempoDia = 
+                        if (_onOff)
+                        {
+                            Thread threadTime = new Thread(TimeControl);
+                            Thread threadTemp = new Thread(TempControl);
+
+                            threadTime.Start();
+                            threadTemp.Start();
+                        }
                         break;
                     }
 
@@ -192,6 +201,16 @@ namespace K8055Test
                         if (_doDayLightCycle)
                         {
                             Thread thread = new Thread(AnalogOutputCycle);
+                            thread.Start();
+                        }
+                        break;
+                    }
+                case "varyTemp":
+                    {
+                        _varyTemp = !_varyTemp;
+                        if (_varyTemp)
+                        {
+                            Thread thread = new Thread(VaryTemp);
                             thread.Start();
                         }
                         break;
@@ -325,9 +344,6 @@ namespace K8055Test
         //NEW CODE IS BELOW HERE
         //--------------------------------------------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// The digital outputs are sequentially switched on and off until the digital output test checkbox is unchecked.
-        /// </summary>
         private void AnalogOutputCycle()
         {
             while (_doDayLightCycle)
@@ -345,6 +361,23 @@ namespace K8055Test
                 {
                     K8055.SetAnalogInputChannel(1, 0);
                 }));
+            }
+        }
+
+        private void VaryTemp()
+        {
+            var rand = new Random();
+            K8055.SetAnalogInputChannel(2, 130);
+
+            while (_varyTemp)
+            {
+                Dispatcher.BeginInvoke(new Action(delegate
+                {
+                    K8055.SetAnalogInputChannel(2,
+                                                    K8055.ReadAnalogChannel(2)
+                                                        + rand.Next(-3, 4));
+                }));
+                Thread.Sleep(100);
             }
         }
 
@@ -432,7 +465,15 @@ namespace K8055Test
             // Persianas(analog out 1)
             Dispatcher.BeginInvoke(new Action(delegate
             {
-                K8055.OutputAnalogChannel(1, 20);
+                if (_isolate)
+                {
+                    K8055.OutputAnalogChannel(1, 50);
+                }
+                else
+                {
+                    K8055.OutputAnalogChannel(1, 150);
+                }
+
             }));
         }
 
@@ -467,6 +508,81 @@ namespace K8055Test
             {
                 ((CheckBox)K8055DigitalOutputCanvas.Children[5]).IsChecked = set;
             }));
+        }
+
+
+
+        private void TimeControl()
+        {
+            //Hora do Dia (digital in 4)
+
+            // -> Persianas (analog out 1)
+            // -> Água Banho TEMPERATURA (analog out 2)
+
+            // -> Aspressor (digital out 6)
+            // -> Maquina café (digital out 7)
+            // -> Radio (digital out 8)
+
+            while (_onOff)
+            {
+                Dispatcher.BeginInvoke(new Action(delegate
+                {
+
+                }));
+                Thread.Sleep(100);
+            }
+        }
+
+        private void TempControl()
+        {
+            //Temperatura (analog in 2)
+            // -> Ar condicionado (digital out 5)
+            // -> Persianas (analog out 1)
+
+            while (_onOff)
+            {
+                Dispatcher.BeginInvoke(new Action(delegate
+                {
+                    if (!(120 < K8055.ReadAnalogChannel(2) && K8055.ReadAnalogChannel(2) < 150))
+                    {
+                        ((CheckBox)K8055DigitalOutputCanvas.Children[4]).IsChecked = true;
+                        _isolate = true;
+                    }
+                    else
+                    {
+                        ((CheckBox)K8055DigitalOutputCanvas.Children[4]).IsChecked = false;
+                        _isolate = false;
+
+                    }
+                }));
+                Thread.Sleep(100);
+            }
+        }
+
+
+        private void ResetTemperature()
+        {
+            var rand = new Random();
+
+            Dispatcher.BeginInvoke(new Action(delegate
+            {
+                K8055.SetAnalogInputChannel(2, rand.Next(30, 240));
+            }));
+        }
+
+
+        //SET TIMES OF DAY
+        //------------------------------------------------------------------------------------------
+        private void AtivarManha_Click(object sender, RoutedEventArgs e)
+        {
+            HorasDia = int.Parse(((TextBox)K8055ManhaHora).Text);
+            MinDia = int.Parse(((TextBox)K8055ManhaMinuto).Text);
+        }
+
+        private void AtivarNoite_Click(object sender, RoutedEventArgs e)
+        {
+            HorasNoite = int.Parse(((TextBox)K8055NoiteHora).Text);
+            MinNoite = int.Parse(((TextBox)K8055NoiteMinuto).Text);
         }
 
     }

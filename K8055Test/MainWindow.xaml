@@ -69,15 +69,16 @@
 
 
 
-        <Button x:Name="dinner"   Style="{StaticResource ProcedureButtons}" Content="Luzes jantar"    Margin="10,334,0,0"/>
-        <Button x:Name="sofa"     Style="{StaticResource ProcedureButtons}" Content="Sofá"            Margin="114,334,0,0"/>
-        <Button x:Name="temp"     Style="{StaticResource ProcedureButtons}" Content="Temperatura"     Margin="219,334,0,0"/>
-        <Button x:Name="blinds"   Style="{StaticResource ProcedureButtons}" Content="Persianas"       Margin="10,379,0,0"/>
-        <Button x:Name="hose"     Style="{StaticResource ProcedureButtons}" Content="Sistema Rega"    Margin="115,379,0,0"/>
-        <Button x:Name="timeDay"  Style="{StaticResource ProcedureButtons}" Content="Hora do Dia"     Margin="220,379,0,0"/>
-        <Button x:Name="onOff"    Style="{StaticResource ProcedureButtons}" Content="On/Off"          Margin="154,437,0,0"/>
+        <Button x:Name="dinner"   Style="{StaticResource ProcedureButtons}" Content="Luzes jantar"     Margin="10,334,0,0"/>
+        <Button x:Name="sofa"     Style="{StaticResource ProcedureButtons}" Content="Sofá"             Margin="114,334,0,0"/>
+        <Button x:Name="temp"     Style="{StaticResource ProcedureButtons}" Content="Temperatura"      Margin="219,334,0,0"/>
+        <Button x:Name="blinds"   Style="{StaticResource ProcedureButtons}" Content="Persianas"        Margin="10,379,0,0"/>
+        <Button x:Name="hose"     Style="{StaticResource ProcedureButtons}" Content="Sistema Rega"     Margin="114,379,0,0"/>
+        <Button x:Name="timeDay"  Style="{StaticResource ProcedureButtons}" Content="Hora do Dia"      Margin="220,379,0,0"/>
+        <Button x:Name="onOff"    Style="{StaticResource ProcedureButtons}" Content="On/Off"           Margin="10,447,0,0"/>
 
-        <Button x:Name="dayNight" Style="{StaticResource ProcedureButtons}" Content="Day/night Cycle" Margin="10,437,0,0"/>
+        <Button x:Name="dayNight" Style="{StaticResource ProcedureButtons}" Content="Day/night Cycle"  Margin="363,447,0,0"/>
+        <Button x:Name="varyTemp" Style="{StaticResource ProcedureButtons}" Content="Vary Temperature" Margin="518,447,0,0"/>
 
 
 
@@ -171,12 +172,27 @@
                 <Button x:Name="K8055SetDebounce2Button"   Style="{StaticResource DebounceStyle}"   Canvas.Left="4" Canvas.Top="108" Content="Set Debounce Time" Click="K8055SetDebounceButtonClick"/>
             </Canvas>
         </GroupBox>
-        <GroupBox Height="130" Width="290" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="328,317,0,0">
-            <GroupBox.Header>
-                <Label Content="Hora do Dia"/>
-            </GroupBox.Header>
-        </GroupBox>
-        <GroupBox Height="105" Width="143" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="331,353,0,0" RenderTransformOrigin="0.5,0.5">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <GroupBox Height="113" Width="143" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="345,325,0,0" RenderTransformOrigin="0.5,0.5">
             <GroupBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -184,16 +200,21 @@
                     <RotateTransform/>
                     <TranslateTransform Y="0.74"/>
                 </TransformGroup>
+
             </GroupBox.RenderTransform>
             <GroupBox.Header>
                 <Label Content="Manhã" Height="27" VerticalAlignment="Top"/>
             </GroupBox.Header>
-            <Canvas x:Name="K8055Counter2Canvas2" Margin="0,0,146,7">
-                <TextBox x:Name="TempoManha"     Style="{StaticResource DebounceStyle}"   Canvas.Left="4" IsEnabled="False"/>
-                <Button x:Name="AtivarManha"  Style="{StaticResource DebounceStyle}"   Canvas.Left="4" Canvas.Top="40" Content="Ativar" Click="K8055CounterResetButtonClick"/>
+            <Canvas x:Name="K8055ManhaCanvas" Margin="0,0,146,7">
+
+                <TextBox x:Name="K8055ManhaMinuto" Style="{StaticResource DebounceStyle}" Canvas.Top="34" Width="50" Height="13"/>
+
+                <Button x:Name="AtivarManha" Style="{StaticResource DebounceStyle}" Canvas.Top="58" Content="Ativar" Click="AtivarManha_Click" Height="21" Width="79"/>
+                <TextBox x:Name="K8055ManhaHora" Style="{StaticResource DebounceStyle}" Canvas.Top="6" Width="50" Height="13"/>
+
             </Canvas>
         </GroupBox>
-        <GroupBox Height="105" Width="141" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="474,354,0,0" RenderTransformOrigin="0.5,0.5">
+        <GroupBox Height="111" Width="140" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="503,322,0,0" RenderTransformOrigin="0.5,0.5">
             <GroupBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -205,11 +226,29 @@
             <GroupBox.Header>
                 <Label Content="Noite" Height="27" VerticalAlignment="Top"/>
             </GroupBox.Header>
-            <Canvas x:Name="K8055Counter2Canvas1" Margin="0,0,146,7">
-                <TextBox x:Name="TempoNoite"     Style="{StaticResource DebounceStyle}"   Canvas.Left="4" IsEnabled="False"/>
-                <Button x:Name="AtivarNoite"  Style="{StaticResource DebounceStyle}"   Canvas.Left="4" Canvas.Top="40" Content="Ativar" Click="K8055CounterResetButtonClick"/>
+            <Canvas x:Name="K8055NoiteTempo" Margin="0,0,146,7">
+                <TextBox x:Name="K8055NoiteHora" Style="{StaticResource DebounceStyle}" IsEnabled="True"  Width="50" Height="13" Canvas.Top="5" />
+                <Button x:Name="AtivarNoite" Style="{StaticResource DebounceStyle}" Content="Ativar" Click="AtivarNoite_Click" Height="19" Width="65" Canvas.Top="51"/>
+                <TextBox x:Name="K8055NoiteMinuto" Style="{StaticResource DebounceStyle}" IsEnabled="True"  Width="50" Height="13" Canvas.Top="33" />
+
             </Canvas>
         </GroupBox>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     </Grid>
 </Window>
