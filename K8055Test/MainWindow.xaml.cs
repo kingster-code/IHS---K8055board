@@ -577,12 +577,35 @@ namespace K8055Test
         {
             HorasDia = int.Parse(((TextBox)K8055ManhaHora).Text);
             MinDia = int.Parse(((TextBox)K8055ManhaMinuto).Text);
+
+            if (HorasDia==24 && MinDia > 30)
+            {
+                HorasDia = 1;
+            }
+            if (HorasDia < 24 && MinDia > 30)
+            {
+                HorasDia += 1;
+            }
+
+            if (HorasDia > 24)
+                HorasDia = 9;
         }
 
         private void AtivarNoite_Click(object sender, RoutedEventArgs e)
         {
             HorasNoite = int.Parse(((TextBox)K8055NoiteHora).Text);
             MinNoite = int.Parse(((TextBox)K8055NoiteMinuto).Text);
+
+            if (HorasNoite == 24 && MinNoite> 30)
+            {
+                HorasNoite = 1;
+            }
+            if (HorasNoite < 24 && MinNoite > 30)
+            {
+                HorasNoite += 1;
+            }
+            if (HorasNoite > 24)
+                HorasNoite = 20;
         }
 
     }
