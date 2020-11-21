@@ -584,7 +584,7 @@ namespace K8055Test
             }
             if (HorasDia < 24 && MinDia > 30)
             {
-                HorasDia += 1;VisualXSnappingGuidelines
+                HorasDia += 1;
             }
 
             if (HorasDia > 24)
