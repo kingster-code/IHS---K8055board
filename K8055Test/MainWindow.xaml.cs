@@ -584,11 +584,14 @@ namespace K8055Test
             }
             if (HorasDia < 24 && MinDia > 30)
             {
-                HorasDia += 1;
+                HorasDia += 1;VisualXSnappingGuidelines
             }
 
             if (HorasDia > 24)
                 HorasDia = 9;
+
+
+            HorasDia = (HorasDia * 255) / 24;
         }
 
         private void AtivarNoite_Click(object sender, RoutedEventArgs e)
@@ -606,6 +609,10 @@ namespace K8055Test
             }
             if (HorasNoite > 24)
                 HorasNoite = 20;
+
+            HorasNoite = (HorasNoite * 255) / 24;
+           
+           
         }
 
     }
